@@ -1,0 +1,53 @@
+.about-container {
+  padding: 60px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.about-card {
+  background: #fff;
+  padding: 50px;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  max-width: 900px;
+  width: 100%;
+}
+
+.about-section h3 {
+  color: #1a2b4b;
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.about-section h1 {
+  color: #1a2b4b;
+  font-size: 36px;
+  margin-bottom: 20px;
+} 
+
+.description {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #5e6d82;
+  margin-bottom: 40px;
+}
+
+.contact-grid {
+  display: flex;
+  gap: 40px;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #f0f4f8;
+}
+
+.contact-item strong {
+  display: block;
+  color: #1a2b4b;
+  margin-bottom: 10px;
+}
+
+.contact-item a {
+  color: #4a76c5;
+  text-decoration: none;
+}

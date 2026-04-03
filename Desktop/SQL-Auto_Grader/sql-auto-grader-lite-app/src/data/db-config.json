@@ -1,0 +1,29 @@
+{
+    "db": {
+        "name": "db.sqlite",
+        "queries": [
+            "CREATE TABLE IF NOT EXISTS 'Datasets' (datasetName VARCHAR PRIMARY KEY)",
+            "CREATE TABLE IF NOT EXISTS 'Tables' ( tableId INTEGER PRIMARY KEY AUTOINCREMENT, tableName VARCHAR NOT NULL, datasetName VARCHAR, FOREIGN KEY (datasetName) REFERENCES Datasets(datasetName))",
+            "INSERT INTO Datasets (datasetName) VALUES ('datasetA'), ('datasetB')",
+            "INSERT INTO Tables (tableName, datasetName) VALUES ('Departments', 'datasetA'), ('Employees', 'datasetA'),('Customers', 'datasetB'),('Orders', 'datasetB')"
+        ]
+    },
+    "datasetA": {
+        "name": "datasetA.sqlite",
+        "queries": [
+            "CREATE TABLE IF NOT EXISTS 'Departments' (departmentId INTEGER PRIMARY KEY, departmentName VARCHAR NOT NULL, location VARCHAR, budget DECIMAL(15,2))",
+            "CREATE TABLE IF NOT EXISTS 'Employees' (employeeId INTEGER PRIMARY KEY, firstname VARCHAR NOT NULL, lastname VARCHAR NOT NULL, email VARCHAR UNIQUE, departmentId INTEGER, salary DECIMAL(12,2) CHECK (salary > 0), FOREIGN KEY (departmentId) REFERENCES Departments(departmentId))",
+            "INSERT INTO Departments (departmentName, location, budget) VALUES ('Human Resources', 'Edmonton, AB', 850000.00), ('Finance', 'Calgary, AB', 2250000.00), ('Information Technology', 'Vancouver, BC', 5200000.00), ('Sales', 'Toronto, ON', 6800000.00), ('Marketing', 'Montreal, QC', 3100000.00), ('Operations', 'Winnipeg, MB', 4100000.00), ('Customer Support', 'Halifax, NS', 1950000.00), ('Research & Development', 'Ottawa, ON', 7400000.00), ('Legal', 'Victoria, BC', 1250000.00), ('Procurement', 'Saskatoon, SK', 900000.00)",
+            "INSERT INTO Employees (firstname, lastname, email, departmentId, salary) VALUES ('Aiden', 'Nguyen', 'aiden.nguyen@company.com', 3, 98000.00), ('Mia', 'Tran', 'mia.tran@company.com', 3, 112500.00), ('Ethan', 'Wong', 'ethan.wong@company.com', 3, 86000.00), ('Olivia', 'Martin', 'olivia.martin@company.com', 4, 75000.00), ('Noah', 'Johnson', 'noah.johnson@company.com', 4, 69000.00), ('Sophia', 'Lee', 'sophia.lee@company.com', 4, 82000.00), ('Liam', 'Patel', 'liam.patel@company.com', 4, 91000.00), ('Ava', 'Brown', 'ava.brown@company.com', 5, 68000.00), ('Jackson', 'Davis', 'jackson.davis@company.com', 5, 72000.00), ('Isabella', 'Lopez', 'isabella.lopez@company.com', 5, 88500.00), ('Lucas', 'Wilson', 'lucas.wilson@company.com', 2, 93000.00), ('Amelia', 'Clark', 'amelia.clark@company.com', 2, 101000.00), ('Benjamin', 'Hall', 'benjamin.hall@company.com', 2, 78000.00), ('Charlotte', 'Young', 'charlotte.young@company.com', 1, 64000.00), ('Henry', 'King', 'henry.king@company.com', 1, 71000.00), ('Harper', 'Scott', 'harper.scott@company.com', 6, 88000.00), ('Daniel', 'Green', 'daniel.green@company.com', 6, 95500.00), ('Ella', 'Adams', 'ella.adams@company.com', 6, 61500.00), ('Sebastian', 'Baker', 'sebastian.baker@company.com', 7, 52000.00), ('Grace', 'Nelson', 'grace.nelson@company.com', 7, 56000.00), ('Matthew', 'Carter', 'matthew.carter@company.com', 7, 60000.00), ('Zoey', 'Mitchell', 'zoey.mitchell@company.com', 8, 125000.00), ('Leo', 'Perez', 'leo.perez@company.com', 8, 132000.00), ('Chloe', 'Roberts', 'chloe.roberts@company.com', 8, 118000.00), ('David', 'Turner', 'david.turner@company.com', 9, 110000.00), ('Lily', 'Phillips', 'lily.phillips@company.com', 9, 97000.00), ('Owen', 'Campbell', 'owen.campbell@company.com', 10, 73500.00), ('Hannah', 'Parker', 'hannah.parker@company.com', 10, 80500.00), ('Ryan', 'Evans', 'ryan.evans@company.com', 4, 61000.00), ('Nora', 'Collins', 'nora.collins@company.com', 3, 74500.00)"
+        ]
+    },
+    "datasetB": {
+        "name": "datasetB.sqlite",
+        "queries": [
+            "CREATE TABLE IF NOT EXISTS 'Customers' (customerId INTEGER PRIMARY KEY, firstname VARCHAR NOT NULL, lastname VARCHAR NOT NULL, email VARCHAR UNIQUE, city VARCHAR, country VARCHAR)",
+            "CREATE TABLE IF NOT EXISTS 'Orders' (orderId INTEGER PRIMARY KEY, customerId INTEGER NOT NULL, orderDate DATA NOT NULL, totalAmount DECIMAL(12,2) CHECK (totalAmount>=0), FOREIGN KEY (customerId) REFERENCES Customers(customerId))",
+            "INSERT INTO Customers (customerId, firstname, lastname, email, city, country) VALUES (1, 'Emma', 'Johnson', 'emma.johnson@example.com', 'Toronto', 'Canada'), (2, 'Liam', 'Smith', 'liam.smith@example.com', 'Vancouver', 'Canada'), (3, 'Olivia', 'Brown', 'olivia.brown@example.com', 'Calgary', 'Canada'), (4, 'Noah', 'Davis', 'noah.davis@example.com', 'Edmonton', 'Canada'), (5, 'Ava', 'Wilson', 'ava.wilson@example.com', 'Montreal', 'Canada'), (6, 'Ethan', 'Miller', 'ethan.miller@example.com', 'New York', 'USA'), (7, 'Sophia', 'Moore', 'sophia.moore@example.com', 'Seattle', 'USA'), (8, 'Jackson', 'Taylor', 'jackson.taylor@example.com', 'San Francisco', 'USA'), (9, 'Mia', 'Anderson', 'mia.anderson@example.com', 'London', 'UK'), (10, 'Lucas', 'Thomas', 'lucas.thomas@example.com', 'Manchester', 'UK'), (11, 'Isabella', 'Martin', 'isabella.martin@example.com', 'Paris', 'France'), (12, 'Henry', 'Lee', 'henry.lee@example.com', 'Berlin', 'Germany')",
+            "INSERT INTO Orders (orderId, customerId, orderDate, totalAmount) VALUES (1, 1, '2025-01-10', 120.50), (2, 1, '2025-02-14', 75.00), (3, 2, '2025-02-03', 240.99), (4, 2, '2025-03-22', 0.00), (5, 3, '2025-01-28', 15.49), (6, 3, '2025-04-01', 310.00), (7, 4, '2025-03-05', 55.75), (8, 5, '2025-03-09', 89.90), (9, 5, '2025-05-18', 499.99), (10, 6, '2025-02-11', 130.00), (11, 6, '2025-06-02', 210.25), (12, 7, '2025-04-12', 44.44), (13, 8, '2025-04-20', 999.00), (14, 8, '2025-07-07', 10.00), (15, 9, '2025-05-05', 60.00), (16, 10, '2025-05-03', 85.25), (17, 10, '2025-08-19', 150.00), (18, 11, '2025-06-15', 70.70), (19, 12, '2025-06-18', 300.00), (20, 12, '2025-09-01', 25.00)"
+        ]
+    }
+}

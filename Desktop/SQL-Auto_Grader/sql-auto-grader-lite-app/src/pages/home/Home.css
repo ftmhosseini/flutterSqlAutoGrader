@@ -1,0 +1,77 @@
+
+.home-container {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%); 
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 28px; }
+
+  .features-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature-card { width: 100%; max-width: 340px; }
+}
+
+
+.hero h1 {
+  font-size: 48px;
+  color: #1a2b4b;
+  margin-bottom: 40px;
+}
+
+.start-btn {
+  background-color: #4a76c5;
+  color: white;
+  padding: 16px 40px;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.features-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 60px;
+}
+
+.feature-card {
+  background: white;
+ padding: 20px 20px;
+  width: 300px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  text-align: center;
+}
+
+
+.feature-card .icon {
+  font-size: 30px;
+  margin-bottom: 20px; 
+}
+
+
+.feature-card h3 {
+  font-size: 20px;
+  color: #1a2b4b;
+  margin-bottom: 15px; 
+
+}
+
+
+.feature-card p {
+  font-size: 15px;
+  color: #5e6d82;
+  line-height: 1.6; 
+ 
+}

@@ -1,0 +1,64 @@
+
+.transition-icon {
+  transition: transform 0.2s ease;
+}
+
+
+.card {
+  transition: transform 0.1s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #b7b9cc ;
+  transform: translateY(-1px);
+}
+
+
+.card.shadow:hover {
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) ;
+}
+
+
+.border-left-primary {
+  border-left: 0.25rem solid #4e73df ;
+}
+
+.border-left-warning {
+  border-left: 0.25rem solid #f6c23e ;
+}
+
+
+.btn-icon-split {
+  padding: 0;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.btn-icon-split .icon {
+  background: rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  padding: 0.375rem 0.75rem;
+}
+
+.btn-icon-split .text {
+  display: flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+}
+
+
+.bg-light {
+  background-color: #f8f9fc;
+}
+
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+

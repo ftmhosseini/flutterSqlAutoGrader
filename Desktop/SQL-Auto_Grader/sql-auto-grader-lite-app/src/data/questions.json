@@ -1,0 +1,566 @@
+{
+  "datasetA": {
+    "Employees": [
+      {
+        "id": "A1",
+        "question": "Return all employees with employeeid, firstname, lastname, and email, ordered by lastname then firstname.",
+        "answer": "SELECT employeeid, firstname, lastname, email FROM employees ORDER BY lastname ASC, firstname ASC;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "A2",
+        "question": "Return firstname, lastname, salary for employees with salary greater than 80000. Order by salary descending.",
+        "answer": "SELECT firstname, lastname, salary FROM employees WHERE salary > 80000 ORDER BY salary DESC;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "A3",
+        "question": "Return the total number of employees as a single value named employeecount.",
+        "answer": "SELECT COUNT(*) AS employeecount FROM employees;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "A4",
+        "question": "Return firstname, lastname, departmentname, and location for all employees who have a department assigned.",
+        "answer": "SELECT e.firstname, e.lastname, d.departmentname, d.location FROM employees e INNER JOIN departments d ON d.departmentid = e.departmentid;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 4
+      },
+      {
+        "id": "A5",
+        "question": "Return departmentname and average salary (alias avgsalary) for each department. Only include departments with average salary greater than 70000. Order by avgsalary descending.",
+        "answer": "SELECT d.departmentname, AVG(e.salary) AS avgsalary FROM employees e INNER JOIN departments d ON d.departmentid = e.departmentid GROUP BY d.departmentid, d.departmentname HAVING AVG(e.salary) > 70000 ORDER BY avgsalary DESC;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 4
+      },
+      {
+        "id": "A6",
+        "question": "Return employees who do not have a matching department record. Show employeeid, firstname, lastname.",
+        "answer": "SELECT e.employeeid, e.firstname, e.lastname FROM employees e LEFT JOIN departments d ON d.departmentid = e.departmentid WHERE d.departmentid IS NULL;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 4
+      },
+      {
+        "id": "A7",
+        "question": "Return employees whose salary is greater than the average salary of their own department. Show firstname, lastname, salary, departmentid.",
+        "answer": "SELECT e.firstname, e.lastname, e.salary, e.departmentid FROM employees e WHERE e.departmentid IS NOT NULL AND e.salary > (SELECT AVG(e2.salary) FROM employees e2 WHERE e2.departmentid = e.departmentid);",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 3
+      },
+      {
+        "id": "A8",
+        "question": "Return departments where total salary expense exceeds the department budget. Show departmentname, budget, totalsalary.",
+        "answer": "SELECT d.departmentname, d.budget, SUM(e.salary) AS totalsalary FROM departments d INNER JOIN employees e ON e.departmentid = d.departmentid GROUP BY d.departmentid, d.departmentname, d.budget HAVING SUM(e.salary) > d.budget;",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 3
+      },
+      {
+        "id": "A9",
+        "question": "Return the top 2 highest-paid employees in each department. Show departmentid, firstname, lastname, salary. Include ties for the 2nd position.",
+        "answer": "SELECT departmentid, firstname, lastname, salary FROM (SELECT e.departmentid, e.firstname, e.lastname, e.salary, DENSE_RANK() OVER (PARTITION BY e.departmentid ORDER BY e.salary DESC) AS dr FROM employees e WHERE e.departmentid IS NOT NULL) ranked WHERE dr <= 2 ORDER BY departmentid ASC, salary DESC;",
+        "difficulty": "hard",
+        "mark": 9,
+        "max_attempts": 3
+      },
+      {
+        "id": "A10",
+        "question": "Select all employees.",
+        "answer": "SELECT * FROM employees;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 4
+      },
+      {
+        "id": "A11",
+        "question": "Get employee first and last names.",
+        "answer": "SELECT firstname, lastname FROM employees;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 3
+      },
+      {
+        "id": "A12",
+        "question": "Count total employees.",
+        "answer": "SELECT COUNT(*) AS total FROM employees;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 4
+      },
+      {
+        "id": "A13",
+        "question": "Get all unique department IDs from employees.",
+        "answer": "SELECT DISTINCT departmentid FROM employees WHERE departmentid IS NOT NULL;",
+        "difficulty": "easy",
+        "mark": 3,
+        "max_attempts": 3
+      },
+      {
+        "id": "A14",
+        "question": "Get employees ordered by last name.",
+        "answer": "SELECT * FROM employees ORDER BY lastname ASC;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 4
+      },
+      {
+        "id": "A15",
+        "question": "Get top 5 highest paid employees.",
+        "answer": "SELECT * FROM employees ORDER BY salary DESC LIMIT 5;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 4
+      },
+      {
+        "id": "A16",
+        "question": "Get employees with salary greater than 80000.",
+        "answer": "SELECT * FROM employees WHERE salary > 80000;",
+        "difficulty": "medium",
+        "mark": 3,
+        "max_attempts": 4
+      },
+      {
+        "id": "A17",
+        "question": "Get employees in department 3.",
+        "answer": "SELECT * FROM employees WHERE departmentid = 3;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 3
+      },
+      {
+        "id": "A18",
+        "question": "Get average employee salary.",
+        "answer": "SELECT AVG(salary) AS avgsalary FROM employees;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "A19",
+        "question": "Get employees whose first name starts with A.",
+        "answer": "SELECT * FROM employees WHERE firstname LIKE 'A%';",
+        "difficulty": "medium",
+        "mark": 3,
+        "max_attempts": 5
+      },
+      {
+        "id": "A20",
+        "question": "Get the highest salary in the company.",
+        "answer": "SELECT MAX(salary) AS maxsalary FROM employees;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 5
+      },
+      {
+        "id": "A21",
+        "question": "Get the lowest salary in the company.",
+        "answer": "SELECT MIN(salary) AS minsalary FROM employees;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "A22",
+        "question": "Get total salary expense.",
+        "answer": "SELECT SUM(salary) AS totalsalary FROM employees;",
+        "difficulty": "easy",
+        "mark": 3,
+        "max_attempts": 3
+      },
+      {
+        "id": "A23",
+        "question": "Get number of employees per department (excluding departments with no employees).",
+        "answer": "SELECT departmentid, COUNT(employeeid) AS total FROM employees WHERE departmentid IS NOT NULL GROUP BY departmentid;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 5
+      },
+      {
+        "id": "A24",
+        "question": "Get employees with email containing 'company'.",
+        "answer": "SELECT * FROM employees WHERE email LIKE '%company%';",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 5
+      }
+    ],
+    "Departments": [
+      {
+        "id": "D1",
+        "question": "Select all departments.",
+        "answer": "SELECT * FROM departments;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 5
+      },
+      {
+        "id": "D2",
+        "question": "Get department names and locations ordered by departmentname.",
+        "answer": "SELECT departmentname, location FROM departments ORDER BY departmentname ASC;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "D3",
+        "question": "Count total departments as departmentcount.",
+        "answer": "SELECT COUNT(*) AS departmentcount FROM departments;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "D4",
+        "question": "Get department names only.",
+        "answer": "SELECT departmentname FROM departments;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 4
+      },
+      {
+        "id": "D5",
+        "question": "Get departments ordered by name.",
+        "answer": "SELECT * FROM departments ORDER BY departmentname ASC;",
+        "difficulty": "easy",
+        "mark": 3,
+        "max_attempts": 4
+      },
+      {
+        "id": "D6",
+        "question": "Get department with id 2.",
+        "answer": "SELECT * FROM departments WHERE departmentid = 2;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "D7",
+        "question": "Get departments with no employees.",
+        "answer": "SELECT d.* FROM departments d LEFT JOIN employees e ON d.departmentid = e.departmentid WHERE e.departmentid IS NULL;",
+        "difficulty": "hard",
+        "mark": 9,
+        "max_attempts": 4
+      },
+      {
+        "id": "D8",
+        "question": "Get employees with their department name.",
+        "answer": "SELECT e.firstname, e.lastname, d.departmentname FROM employees e INNER JOIN departments d ON e.departmentid = d.departmentid;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 3
+      },
+      {
+        "id": "D9",
+        "question": "Get average salary per department.",
+        "answer": "SELECT d.departmentname, AVG(e.salary) AS avg_salary FROM employees e INNER JOIN departments d ON e.departmentid = d.departmentid GROUP BY d.departmentname;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 4
+      },
+      {
+        "id": "D10",
+        "question": "Get departments with more than 3 employees.",
+        "answer": "SELECT d.departmentname, COUNT(e.employeeid) AS total FROM departments d INNER JOIN employees e ON d.departmentid = e.departmentid GROUP BY d.departmentname HAVING COUNT(e.employeeid) > 3;",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 3
+      },
+      {
+        "id": "D11",
+        "question": "Get the department with the highest total salary.",
+        "answer": "SELECT d.departmentname, SUM(e.salary) AS total FROM departments d INNER JOIN employees e ON d.departmentid = e.departmentid GROUP BY d.departmentname ORDER BY total DESC LIMIT 1;",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 5
+      }
+    ]
+  },
+  "datasetB": {
+    "Customers": [
+      {
+        "id": "B1",
+        "question": "Return customerid, firstname, lastname, city for customers in Canada, ordered by lastname then firstname.",
+        "answer": "SELECT customerid, firstname, lastname, city FROM customers WHERE LOWER(country) = 'canada' ORDER BY lastname ASC, firstname ASC;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "B2",
+        "question": "Return the total number of orders as ordercount.",
+        "answer": "SELECT COUNT(*) AS ordercount FROM orders;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "B3",
+        "question": "Return orderid, orderdate, totalamount for orders with totalamount >= 1000, ordered by orderdate descending.",
+        "answer": "SELECT orderid, orderdate, totalamount FROM orders WHERE totalamount >= 1000 ORDER BY orderdate DESC;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "B4",
+        "question": "Return orderid, orderdate, customer full name as customername, and totalamount for all orders.",
+        "answer": "SELECT o.orderid, o.orderdate, c.firstname || ' ' || c.lastname AS customername, o.totalamount FROM orders o INNER JOIN customers c ON c.customerid = o.customerid;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 4
+      },
+      {
+        "id": "B5",
+        "question": "Return customerid and total spend (alias totalspent) for each customer with totalspent > 2000. Order by totalspent descending.",
+        "answer": "SELECT c.customerid, SUM(o.totalamount) AS totalspent FROM customers c INNER JOIN orders o ON o.customerid = c.customerid GROUP BY c.customerid HAVING SUM(o.totalamount) > 2000 ORDER BY totalspent DESC;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 4
+      },
+      {
+        "id": "B6",
+        "question": "Return city and number of orders (alias ordersincity) for each city, ordered by ordersincity descending.",
+        "answer": "SELECT c.city, COUNT(o.orderid) AS ordersincity FROM customers c INNER JOIN orders o ON o.customerid = c.customerid GROUP BY c.city ORDER BY ordersincity DESC;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 4
+      },
+      {
+        "id": "B7",
+        "question": "Return each customerid with their most recent orderdate and totalamount. Include all rows matching the most recent date.",
+        "answer": "SELECT o.customerid, o.orderdate, o.totalamount FROM orders o WHERE o.orderdate = (SELECT MAX(o2.orderdate) FROM orders o2 WHERE o2.customerid = o.customerid);",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 3
+      },
+      {
+        "id": "B8",
+        "question": "Return customers who have never placed an order. Show customerid, firstname, lastname.",
+        "answer": "SELECT c.customerid, c.firstname, c.lastname FROM customers c LEFT JOIN orders o ON o.customerid = c.customerid WHERE o.orderid IS NULL;",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 3
+      },
+      {
+        "id": "B9",
+        "question": "Return monthly totals with the previous month total (alias prevtotal) and difference (alias diff). Month format YYYY-MM, ordered by month.",
+        "answer": "WITH monthly AS (SELECT SUBSTR(orderdate, 1, 7) AS month, SUM(totalamount) AS total FROM orders GROUP BY SUBSTR(orderdate, 1, 7)) SELECT month, total, LAG(total) OVER (ORDER BY month) AS prevtotal, total - LAG(total) OVER (ORDER BY month) AS diff FROM monthly ORDER BY month;",
+        "difficulty": "hard",
+        "mark": 9,
+        "max_attempts": 3
+      },
+      {
+        "id": "B10",
+        "question": "Select all customers.",
+        "answer": "SELECT * FROM customers;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 5
+      },
+      {
+        "id": "B11",
+        "question": "Get customer first and last names.",
+        "answer": "SELECT firstname, lastname FROM customers;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 4
+      },
+      {
+        "id": "B12",
+        "question": "Count total customers.",
+        "answer": "SELECT COUNT(*) AS total FROM customers;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 4
+      },
+      {
+        "id": "B13",
+        "question": "Get customers ordered by last name.",
+        "answer": "SELECT * FROM customers ORDER BY lastname ASC;",
+        "difficulty": "easy",
+        "mark": 3,
+        "max_attempts": 4
+      },
+      {
+        "id": "B14",
+        "question": "Get customers from Canada.",
+        "answer": "SELECT * FROM customers WHERE LOWER(country) = 'canada';",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 4
+      },
+      {
+        "id": "B15",
+        "question": "Get distinct countries customers are from.",
+        "answer": "SELECT DISTINCT country FROM customers;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 5
+      },
+      {
+        "id": "B16",
+        "question": "Get customers whose last name contains 'son'.",
+        "answer": "SELECT * FROM customers WHERE lastname LIKE '%son%';",
+        "difficulty": "medium",
+        "mark": 3,
+        "max_attempts": 3
+      },
+      {
+        "id": "B17",
+        "question": "Get customers from a specific city Toronto.",
+        "answer": "SELECT * FROM customers WHERE city = 'Toronto';",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 3
+      },
+      {
+        "id": "B18",
+        "question": "Count customers per country.",
+        "answer": "SELECT country, COUNT(*) AS total FROM customers GROUP BY country;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 5
+      },
+      {
+        "id": "B19",
+        "question": "Get customers from the UK.",
+        "answer": "SELECT * FROM customers WHERE LOWER(country) = 'uk';",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 3
+      }
+    ],
+    "Orders": [
+      {
+        "id": "B20",
+        "question": "Select all orders.",
+        "answer": "SELECT * FROM orders;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 5
+      },
+      {
+        "id": "B21",
+        "question": "Get total number of orders.",
+        "answer": "SELECT COUNT(*) AS total FROM orders;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 5
+      },
+      {
+        "id": "B22",
+        "question": "Get orders ordered by date descending.",
+        "answer": "SELECT * FROM orders ORDER BY orderdate DESC;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 5
+      },
+      {
+        "id": "B23",
+        "question": "Get total revenue from all orders.",
+        "answer": "SELECT SUM(totalamount) AS total_revenue FROM orders;",
+        "difficulty": "easy",
+        "mark": 3,
+        "max_attempts": 4
+      },
+      {
+        "id": "B24",
+        "question": "Get average order amount.",
+        "answer": "SELECT AVG(totalamount) AS avg_amount FROM orders;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 3
+      },
+      {
+        "id": "B25",
+        "question": "Get orders with amount greater than 100.",
+        "answer": "SELECT * FROM orders WHERE totalamount > 100;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 5
+      },
+      {
+        "id": "B26",
+        "question": "Get orders placed in 2025.",
+        "answer": "SELECT * FROM orders WHERE orderdate BETWEEN '2025-01-01' AND '2025-12-31';",
+        "difficulty": "medium",
+        "mark": 3,
+        "max_attempts": 5
+      },
+      {
+        "id": "B27",
+        "question": "Get number of orders per customer.",
+        "answer": "SELECT customerid, COUNT(orderid) AS total_orders FROM orders GROUP BY customerid;",
+        "difficulty": "medium",
+        "mark": 5,
+        "max_attempts": 3
+      },
+      {
+        "id": "B28",
+        "question": "Get customers with their orders.",
+        "answer": "SELECT c.firstname, c.lastname, o.orderid, o.totalamount FROM customers c INNER JOIN orders o ON c.customerid = o.customerid;",
+        "difficulty": "medium",
+        "mark": 4,
+        "max_attempts": 4
+      },
+      {
+        "id": "B29",
+        "question": "Get customers who have more than 1 order.",
+        "answer": "SELECT customerid, COUNT(orderid) AS total FROM orders GROUP BY customerid HAVING COUNT(orderid) > 1;",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 4
+      },
+      {
+        "id": "B30",
+        "question": "Get the highest order amount.",
+        "answer": "SELECT MAX(totalamount) AS max_amount FROM orders;",
+        "difficulty": "easy",
+        "mark": 1,
+        "max_attempts": 4
+      },
+      {
+        "id": "B31",
+        "question": "Get the customer who spent the most.",
+        "answer": "SELECT customerid, SUM(totalamount) AS total_spent FROM orders GROUP BY customerid ORDER BY total_spent DESC LIMIT 1;",
+        "difficulty": "hard",
+        "mark": 9,
+        "max_attempts": 5
+      },
+      {
+        "id": "B32",
+        "question": "Get orders with zero amount.",
+        "answer": "SELECT * FROM orders WHERE totalamount = 0;",
+        "difficulty": "medium",
+        "mark": 3,
+        "max_attempts": 4
+      },
+      {
+        "id": "B33",
+        "question": "Get total revenue per customer.",
+        "answer": "SELECT c.firstname, c.lastname, SUM(o.totalamount) AS revenue FROM customers c INNER JOIN orders o ON c.customerid = o.customerid GROUP BY c.customerid;",
+        "difficulty": "hard",
+        "mark": 7,
+        "max_attempts": 3
+      },
+      {
+        "id": "B34",
+        "question": "Get orders sorted by amount descending.",
+        "answer": "SELECT * FROM orders ORDER BY totalamount DESC;",
+        "difficulty": "easy",
+        "mark": 2,
+        "max_attempts": 4
+      }
+    ]
+  }
+}

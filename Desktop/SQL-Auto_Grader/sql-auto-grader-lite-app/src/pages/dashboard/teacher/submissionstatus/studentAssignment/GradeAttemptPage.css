@@ -1,0 +1,152 @@
+/* Main container for the grading page */
+.grading-container {
+  display: fixed;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Top row: expected + student answer side by side */
+.grading-top {
+  display: flex;
+  /* justify-content: space-evenly; */
+  gap: 12px;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+/* Shared box styling */
+.teacher-box,
+.student-box{
+  background: #ffffff;
+  width: 50%;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.editor-box,
+.bottom-box {
+  background: #ffffff;
+  width: 100%;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Titles inside each box */
+.teacher-box h3,
+.student-box h3,
+.editor-box h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.teacher-box p{
+  align-items: start;
+}
+
+/* Teacher + Student answer boxes */
+.teacher-box pre,
+.student-box pre {
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Editor box should expand more */
+.editor-box {
+  flex: 1;
+  overflow: hidden;
+  /* padding: 1px 6px 2px; */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bottom grading section */
+.bottom-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 16px;
+  border-top: 1px solid #dee2e6;
+  background: #fff;
+  flex-shrink: 0;
+}
+.editor-box .card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 0 !important;
+}
+.editor-box .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 8px;
+}
+
+.editor-box .card-body textarea:first-of-type {
+  flex: 2;
+  height: unset !important;
+  resize: none;
+}
+
+.editor-box .card-body textarea:last-of-type {
+  flex: 1;
+  height: unset !important;
+  resize: none;
+}
+/* .editor-box textarea:first-of-type {
+  flex: 7; 
+  min-height: 150px;
+  font-family: 'Courier New', monospace;
+}
+
+
+.editor-box textarea:last-of-type {
+  flex: 3;
+  min-height: 150px;
+  background: #272822;
+  color: #a6e22e;
+} */
+/* Save button */
+
+
+.grade-display {
+  font-size: 1rem;
+}
+
+.toggle-btn {
+  padding: 6px 16px;
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toggle-btn:hover {
+  background: #0b5ed7;
+}
+
+.close-btn {
+  padding: 0px 16px;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #5c636a;
+}

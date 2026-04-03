@@ -1,0 +1,123 @@
+{
+  "cohorts": [
+    {
+      "cohort_id": "cohort_2025",
+      "name": "Cohort 2025",
+      "student_uids": []
+    },
+    {
+      "cohort_id": "WiTech",
+      "name": "Women in Tech",
+      "student_uids": []
+    },
+    {
+      "cohort_id": "Alumni",
+      "name": "Alumni Student",
+      "student_uids": []
+    }
+  ],
+  "assignments": [
+    {
+      "assignment_id": "assign_001",
+      "title": "SQL Basics",
+      "description": "Intro to SELECT queries on the Employees table.",
+      "dataset": "datasetA",
+      "dueDate": "2026-04-01",
+      "cohort_id": "cohort_2025",
+      "questions": [
+        {
+          "questionText": "Select all employees",
+          "answer": "SELECT * FROM Employees;",
+          "orderMatters": false,
+          "aliasStrict": false,
+          "mark": 2,
+          "max_attempts": 4
+        },
+        {
+          "questionText": "Get employee first and last names",
+          "answer": "SELECT firstname, lastname FROM Employees;",
+          "orderMatters": false,
+          "aliasStrict": false,
+          "mark": 1,
+          "max_attempts": 3
+        },
+        {
+          "questionText": "Count total employees",
+          "answer": "SELECT COUNT(*) FROM Employees;",
+          "orderMatters": false,
+          "aliasStrict": false,
+          "mark": 2,
+          "max_attempts": 4
+        }
+      ]
+    },
+    {
+      "assignment_id": "assign_002",
+      "title": "Filtering & Sorting",
+      "description": "Practice WHERE, ORDER BY, and LIMIT clauses.",
+      "dataset": "datasetA",
+      "dueDate": "2026-04-10",
+      "cohort_id": "WiTech",
+      "questions": [
+        {
+          "questionText": "Get employees with salary greater than 80000",
+          "answer": "SELECT * FROM Employees WHERE salary > 80000;",
+          "orderMatters": false,
+          "aliasStrict": false,
+          "mark": 3,
+          "max_attempts": 4
+        },
+        {
+          "questionText": "Get top 5 highest paid employees",
+          "answer": "SELECT * FROM Employees ORDER BY salary DESC LIMIT 5;",
+          "orderMatters": true,
+          "aliasStrict": false,
+          "mark": 4,
+          "max_attempts": 4
+        },
+        {
+          "questionText": "Get employees in department 3",
+          "answer": "SELECT * FROM Employees WHERE departmentId = 3;",
+          "orderMatters": false,
+          "aliasStrict": false,
+          "mark": 4,
+          "max_attempts": 3
+        }
+      ]
+    },
+    {
+      "assignment_id": "assign_003",
+      "title": "Joins & Aggregations",
+      "description": "Advanced queries joining Employees and Departments.",
+      "dataset": "datasetA",
+      "dueDate": "2026-04-20",
+      "cohort_id": "Alumni",
+      "questions": [
+        {
+          "questionText": "Get each employee with their department name",
+          "answer": "SELECT e.firstname, e.lastname, d.departmentName FROM Employees e INNER JOIN Departments d ON e.departmentId = d.departmentId;",
+          "orderMatters": false,
+          "aliasStrict": true,
+          "mark": 4,
+          "max_attempts": 3
+        },
+        {
+          "questionText": "Get average salary per department",
+          "answer": "SELECT d.departmentName, AVG(e.salary) AS avg_salary FROM Employees e JOIN Departments d ON e.departmentId = d.departmentId GROUP BY d.departmentName;",
+          "orderMatters": false,
+          "aliasStrict": true,
+          "mark": 5,
+          "max_attempts": 4
+        },
+        {
+          "questionText": "Get the highest paid employee in each department",
+          "answer": "SELECT d.departmentName, e.firstname, e.lastname, e.salary FROM Employees e JOIN Departments d ON e.departmentId = d.departmentId WHERE e.salary = (SELECT MAX(salary) FROM Employees WHERE departmentId = e.departmentId);",
+          "orderMatters": false,
+          "aliasStrict": true,
+          "mark": 9,
+          "max_attempts": 5
+        }
+      ]
+    }
+  ]
+}

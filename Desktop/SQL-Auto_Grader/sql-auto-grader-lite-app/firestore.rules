@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isTeacher() {
+      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+
+    // Users: read/write own profile only
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.token.email_verified == true;
+      // Teachers can read any user (e.g. to list students)
+      allow read: if isTeacher();
+    }
+
+    // Assignments: teachers write, any authenticated user reads
+    match /assignments/{docId} {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+
+    // Student assignments: authenticated users read/write (students see their own via queries)
+    match /student_assignments/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth();
+    }
+
+    // Attempts: students create their own only; is_correct must be false on create (grading is client-side)
+    match /question_attempts/{attemptId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.resource.data.student_user_id == request.auth.uid;
+      // Teachers can override marks
+      allow update: if isTeacher();
+    }
+
+    // Questions & preset questions: teachers write, authenticated read
+    match /questions/{docId} {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+
+    match /presetQuestions/{docId} {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+
+    // Cohorts: teachers manage, students can join (update student_uids only)
+    match /cohorts/{docId} {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+      allow update: if isAuth() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['student_uids']);
+    }
+
+    // Quizzes: teachers write, authenticated read
+    match /quizzes/{docId} {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+
+    match /student_quizzes/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth();
+    }
+
+    // SQLite config: teachers write (upload/update datasets), authenticated read
+    match /sqliteConfigs/{docId} {
+      allow read: if isAuth();
+      allow write: if isTeacher();
+    }
+  }
+}

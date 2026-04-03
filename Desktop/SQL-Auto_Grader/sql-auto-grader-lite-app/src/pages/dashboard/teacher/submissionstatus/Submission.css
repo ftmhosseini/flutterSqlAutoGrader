@@ -1,0 +1,134 @@
+
+
+.submission-page {
+    padding: 1.5rem;
+    background-color: #f8f9fc;
+}
+
+
+.text-dashboard-title {
+    color: #1a2b4b;
+    font-weight: 500;
+    margin-bottom: 12px; font-family: Arial, sans-serif;
+}
+
+.submission-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+
+.nav-tabs-custom {
+    border-bottom: 1px solid #e3e6f0;
+    margin-bottom: 1.5rem;
+}
+
+.nav-tabs-custom .nav-link {
+    border: none;
+    color: #858796;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s;
+}
+
+.nav-tabs-custom .nav-link.active {
+    color: #4e73df;
+    border-bottom: 3px solid #4e73df;
+    background: transparent;
+}
+
+
+.submission-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.submission-table th {
+    background-color: #f8f9fc;
+    color: #4e73df;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    border-bottom: 2px solid #e3e6f0;
+}
+
+.submission-table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e3e6f0;
+    color: #5a5c69;
+}
+
+
+.status-badge {
+    padding: 0.25em 0.75em;
+    border-radius: 10rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+
+.btn-grade {
+    background-color: #4e73df;
+    border-color: #4e73df;
+    color: white;
+    border-radius: 0.35rem;
+    padding: 0.375rem 1rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-grade:hover {
+    background-color: #2e59d9;
+    box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.2);
+}
+
+
+.btn-primary {
+  background-color: #4e73df;
+  border-color: #4e73df;
+  font-weight: 600;
+  border-radius: 0.35rem;
+}
+
+
+.student-assignment-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #e3e6f0;
+  border-radius: 0.35rem;
+  overflow: hidden;
+}
+
+.student-assignment-table th {
+  background-color: #f8f9fc;
+  color: #4e73df;
+  padding: 12px;
+  border-bottom: 2px solid #e3e6f0;
+}
+
+.student-assignment-table td {
+  padding: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+
+.sql-code-display {
+  font-family: 'Courier New', monospace;
+  background-color: #f8f9fc;
+  padding: 10px;
+  border-radius: 4px;
+  color: #2e59d9;
+}
+
+
+.input-group .btn {
+  margin: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

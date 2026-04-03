@@ -1,0 +1,55 @@
+
+.modal-overlay {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100vw; 
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px); 
+}
+
+
+.modal-custom-container {
+  background: white;
+  width: 95%;
+  max-width: 1200px;
+  height: 90vh;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column; 
+  overflow: hidden; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Шапка модалки */
+.modal-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background: #f8f9fc;
+  border-bottom: 1px solid #e3e6f0;
+  flex-shrink: 0; 
+}
+
+
+.modal-body-section {
+  flex: 1; 
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.close-btn-x {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #858796;
+}
+
+.close-btn-x:hover { color: #4e73df; }
