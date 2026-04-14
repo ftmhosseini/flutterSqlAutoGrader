@@ -193,9 +193,11 @@ class _QuizFormPageState extends State<_QuizFormPage> {
   }
 
   bool _loadingPresets = false;
+  Map<String, List<Map<String, dynamic>>> _schemaMap = {};
+  int? _selectedPreset;
 
   Future<void> _onDatasetChanged(String dataset) async {
-    setState(() { _selectedDataset = dataset; _tables = []; _presets = []; _selectedTables = []; _loadingPresets = true; });
+    setState(() { _selectedDataset = dataset; _tables = []; _presets = []; _selectedTables = []; _selectedPreset = null; _loadingPresets = true; });
     final db = await _buildDb('db');
     final rows = await db.rawQuery('SELECT DISTINCT tableName FROM Tables WHERE datasetName = ?', [dataset]);
     await db.close();
@@ -204,18 +206,27 @@ class _QuizFormPageState extends State<_QuizFormPage> {
 
     if (tables.isEmpty) { setState(() => _loadingPresets = false); return; }
     final datasetDb = await _buildDb(dataset);
+    final schemaMap = <String, List<Map<String, dynamic>>>{};
     final schemaText = (await Future.wait(tables.map((t) async {
-      final cols = await datasetDb.rawQuery("SELECT name, type FROM pragma_table_info(?)", [t]);
+      final cols = await datasetDb.rawQuery("SELECT name, type, pk FROM pragma_table_info(?)", [t]);
+      final fkRows = await datasetDb.rawQuery("SELECT [from] FROM pragma_foreign_key_list(?)", [t]);
+      final fkCols = fkRows.map((r) => r['from'] as String).toSet();
+      schemaMap[t] = cols.map((c) => {
+        'name': c['name'], 'type': c['type'],
+        'pk': (c['pk'] as int? ?? 0) > 0,
+        'fk': fkCols.contains(c['name']),
+      }).toList();
       return 'Table: $t\n${cols.map((c) => '  ${c['name']} ${c['type']}').join('\n')}';
     }))).join('\n\n');
     await datasetDb.close();
+    setState(() => _schemaMap = schemaMap);
 
     try {
       final res = await http.post(
         Uri.parse('https://api.groq.com/openai/v1/chat/completions'),
         headers: {'Authorization': 'Bearer $_groqApiKey', 'Content-Type': 'application/json'},
         body: jsonEncode({'model': 'llama-3.3-70b-versatile', 'messages': [{'role': 'user',
-          'content': 'SQL instructor. Generate 10 SQL practice questions for this schema.\n\n$schemaText\n\nReturn ONLY valid JSON array. Each: {"id":1,"question":"...","answer":"SELECT ...","mark":2,"difficulty":"easy","max_attempts":3,"orderMatters":false,"aliasStrict":false}'}],
+          'content': 'SQL instructor. Generate 5 SQL practice questions for this schema.\n\n$schemaText\n\nReturn ONLY valid JSON array. Each: {"id":1,"question":"...","answer":"SELECT ...","mark":2,"difficulty":"easy","max_attempts":3,"orderMatters":false,"aliasStrict":false}'}],
           'max_tokens': 2048, 'temperature': 1.0}),
       );
       if (res.statusCode == 200) {
@@ -311,44 +322,47 @@ class _QuizFormPageState extends State<_QuizFormPage> {
             Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Text('Question Designer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
               const SizedBox(height: 10),
-              if (_tables.isNotEmpty) ...[
+              if (_schemaMap.isNotEmpty) ...[
+                _schemaWidget(_schemaMap),
+                const SizedBox(height: 10),
+              ],
+              
+              if (_loadingPresets) ...[
+                const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Row(children: [SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)), SizedBox(width: 8), Text('⏳ Generating AI questions...', style: TextStyle(fontSize: 12, color: Colors.grey))])),
+              ] else if (_presets.isNotEmpty) ...[
+                if (_tables.isNotEmpty) ...[
                 const Text('Filter by tables:', style: TextStyle(fontSize: 12, color: Colors.grey)),
                 Wrap(spacing: 8, children: _tables.map((t) => FilterChip(
                   label: Text(t, style: const TextStyle(fontSize: 11)),
                   selected: _selectedTables.contains(t),
-                  onSelected: (v) => setState(() => v ? _selectedTables.add(t) : _selectedTables.remove(t)),
+                  onSelected: (v) => setState(() { v ? _selectedTables.add(t) : _selectedTables.remove(t); _selectedPreset = null; }),
                 )).toList()),
                 const SizedBox(height: 10),
               ],
-              if (_loadingPresets) ...[
-                const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Row(children: [SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)), SizedBox(width: 8), Text('⏳ Generating AI questions...', style: TextStyle(fontSize: 12, color: Colors.grey))])),
-              ] else if (_presets.isNotEmpty) ...[
-                Builder(builder: (_) {
-                  final filtered = _presets.where((p) {
+                DropdownButtonFormField<int>(
+                  decoration: const InputDecoration(labelText: 'Use Preset', border: OutlineInputBorder(), isDense: true),
+                  isExpanded: true,
+                  value: _selectedPreset,
+                  items: _presets.asMap().entries.where((e) {
                     if (_selectedTables.isEmpty) return true;
-                    final ans = (p['answer'] as String? ?? '').toLowerCase();
+                    final ans = (e.value['answer'] as String? ?? '').toLowerCase();
                     return _selectedTables.every((t) => ans.contains(t.toLowerCase()));
-                  }).toList();
-                  return DropdownButtonFormField<int>(
-                    key: ValueKey('${_selectedTables.join()}_${filtered.length}'),
-                    decoration: const InputDecoration(labelText: 'Use Preset', border: OutlineInputBorder(), isDense: true),
-                    value: null,
-                    items: filtered.asMap().entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value['question'] as String? ?? '', overflow: TextOverflow.ellipsis))).toList(),
-                    onChanged: (v) {
-                      if (v == null) return;
-                      final p = filtered[v];
-                      setState(() {
-                        _questionCtrl.text = p['question'] ?? '';
-                        _answerCtrl.text = p['answer'] ?? '';
-                        _difficulty = p['difficulty'] ?? 'easy';
-                        _maxAttempts = p['max_attempts'] is int ? p['max_attempts'] : int.tryParse('${p['max_attempts']}') ?? 1;
-                        _mark = p['mark'] is int ? p['mark'] : int.tryParse('${p['mark']}') ?? 1;
-                        _orderMatters = p['orderMatters'] == true;
-                        _aliasStrict = p['aliasStrict'] == true;
-                      });
-                    },
-                  );
-                }),
+                  }).map((e) => DropdownMenuItem(value: e.key, child: Text(e.value['question'] as String? ?? '', overflow: TextOverflow.ellipsis))).toList(),
+                  onChanged: (v) {
+                    if (v == null) return;
+                    final p = _presets[v];
+                    setState(() {
+                      _selectedPreset = v;
+                      _questionCtrl.text = p['question'] ?? '';
+                      _answerCtrl.text = p['answer'] ?? '';
+                      _difficulty = p['difficulty'] ?? 'easy';
+                      _maxAttempts = p['max_attempts'] ?? 1;
+                      _mark = p['mark'] ?? 1;
+                      _orderMatters = p['orderMatters'] ?? false;
+                      _aliasStrict = p['aliasStrict'] ?? false;
+                    });
+                  },
+                ),
                 const SizedBox(height: 10),
               ],
               TextField(controller: _questionCtrl, maxLines: 3, decoration: const InputDecoration(labelText: 'Question Prompt', border: OutlineInputBorder())),
@@ -397,4 +411,29 @@ class _QuizFormPageState extends State<_QuizFormPage> {
       ),
     );
   }
+
+  Widget _schemaWidget(Map<String, List<Map<String, dynamic>>> schema) => Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(color: const Color(0xFFF8F8F8), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade200)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('📋 Schema', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+      const SizedBox(height: 6),
+      Wrap(spacing: 16, runSpacing: 8, children: schema.entries.map((e) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF4e73df), fontSize: 12)),
+          ...e.value.map((c) => Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Text('${c['name']}  ', style: const TextStyle(fontSize: 11)),
+              Text(c['type'] as String, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              if (c['pk'] == true) ...[const SizedBox(width: 4), Container(padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1), decoration: BoxDecoration(color: const Color(0xFFe67e22).withOpacity(0.15), borderRadius: BorderRadius.circular(3)), child: const Text('PK', style: TextStyle(fontSize: 9, color: Color(0xFFe67e22), fontWeight: FontWeight.bold)))],
+              if (c['fk'] == true) ...[const SizedBox(width: 4), Container(padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1), decoration: BoxDecoration(color: const Color(0xFF8e44ad).withOpacity(0.15), borderRadius: BorderRadius.circular(3)), child: const Text('FK', style: TextStyle(fontSize: 9, color: Color(0xFF8e44ad), fontWeight: FontWeight.bold)))],
+            ]),
+          )),
+        ],
+      )).toList()),
+    ]),
+  );
 }

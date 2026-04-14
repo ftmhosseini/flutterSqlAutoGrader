@@ -118,23 +118,24 @@ class _TeacherDashboardState extends State<_TeacherDashboard> {
         const SizedBox(height: 24),
         Text('Needs Grading (${_needsGrading.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),
-        if (_needsGrading.isEmpty)
-          const Text('No assignments waiting for grading.', style: TextStyle(color: Colors.grey))
-        else ..._needsGrading.map((sa) {
-          final name = _userNames[sa['student_user_id']] ?? 'Unknown';
-          final a = _assignments.firstWhere((a) => a['assignment_id'] == sa['assignment_id'], orElse: () => {});
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Text('$name — ${a['title'] ?? ''}', style: const TextStyle(fontSize: 14)),
-              trailing: ElevatedButton(
-                onPressed: () => context.go('/dashboard/teacher/submissions'),
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4e73df), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                child: const Text('Grade', style: TextStyle(fontSize: 12)),
-              ),
-            ),
-          );
-        }),
+        // if (_needsGrading.isEmpty)
+        //   const Text('No assignments waiting for grading.', style: TextStyle(color: Colors.grey))
+        // else ..._needsGrading.map((sa) {
+        //   final name = _userNames[sa['student_user_id']] ?? 'Unknown';
+        //   final a = _assignments.firstWhere((a) => a['assignment_id'] == sa['assignment_id'], orElse: () => {});
+        //   return Card(
+        //     margin: const EdgeInsets.only(bottom: 8),
+        //     child: ListTile(
+        //       title: Text('$name — ${a['title'] ?? ''}', style: const TextStyle(fontSize: 14)),
+        //       trailing: ElevatedButton(
+        //         onPressed: () => context.go('/dashboard/teacher/submissions'),
+        //         style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4e73df), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        //         child: const Text('Grade', style: TextStyle(fontSize: 12)),
+        //       ),
+        //     ),
+        //   );
+        // }),
+        
         const SizedBox(height: 24),
         const Text('Recent Assignments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),
@@ -167,7 +168,8 @@ class _StatCard extends StatelessWidget {
   final String label, value;
   final Color color;
   final VoidCallback onTap;
-  const _StatCard({required this.label, required this.value, required this.color, required this.onTap});
+  final double valueFontSize;
+  const _StatCard({required this.label, required this.value, required this.color, required this.onTap, this.valueFontSize = 12});
 
   @override
   Widget build(BuildContext context) => Expanded(child: GestureDetector(
@@ -180,7 +182,7 @@ class _StatCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        Text(value, style: TextStyle(fontSize: valueFontSize, fontWeight: FontWeight.bold)),
       ]),
     ),
   ));
@@ -248,9 +250,12 @@ class _TeacherOverviewPageState extends State<TeacherOverviewPage> {
       if (snap.exists) userNames[sid] = snap.data()?['fullName'] ?? snap.data()?['email'] ?? sid;
     }
     setState(() {
-      _assignments = assignments; _studentAssignments = studentAssignments;
+      _assignments = assignments; 
+      _studentAssignments = studentAssignments;
       _studentsCount = studentAssignments.map((s) => s['student_user_id']).toSet().length;
-      _needsGrading = needsGrading; _userNames = userNames; _loading = false;
+      _needsGrading = needsGrading; 
+      _userNames = userNames;
+      _loading = false;
     });
   }
 
@@ -267,28 +272,29 @@ class _TeacherOverviewPageState extends State<TeacherOverviewPage> {
           const SizedBox(width: 12),
           _StatCard(label: 'Assignments', value: '${_assignments.length}', color: Colors.green, onTap: () => context.go('/dashboard/teacher/assignments')),
           const SizedBox(width: 12),
-          _StatCard(label: 'Needs Grading', value: '${_needsGrading.length}', color: Colors.cyan, onTap: () => context.go('/dashboard/teacher/submissions')),
+          // _StatCard(label: 'Needs Grading', value: '${_needsGrading.length}', color: Colors.cyan, onTap: () => context.go('/dashboard/teacher/submissions')),
         ]),
         const SizedBox(height: 24),
-        Text('Needs Grading (${_needsGrading.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        const SizedBox(height: 8),
-        if (_needsGrading.isEmpty)
-          const Text('No assignments waiting for grading.', style: TextStyle(color: Colors.grey))
-        else ..._needsGrading.map((sa) {
-          final name = _userNames[sa['student_user_id']] ?? 'Unknown';
-          final a = _assignments.firstWhere((x) => x['assignment_id'] == sa['assignment_id'], orElse: () => {});
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Text('$name — ${a['title'] ?? ''}', style: const TextStyle(fontSize: 14)),
-              trailing: ElevatedButton(
-                onPressed: () => context.go('/dashboard/teacher/submissions'),
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4e73df), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                child: const Text('Grade', style: TextStyle(fontSize: 12)),
-              ),
-            ),
-          );
-        }),
+        // Text('Needs Grading (${_needsGrading.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        // const SizedBox(height: 8),
+        // if (_needsGrading.isEmpty)
+        //   const Text('No assignments waiting for grading.', style: TextStyle(color: Colors.grey))
+        // else ..._needsGrading.map((sa) {
+        //   final name = _userNames[sa['student_user_id']] ?? 'Unknown';
+        //   final a = _assignments.firstWhere((x) => x['assignment_id'] == sa['assignment_id'], orElse: () => {});
+        //   return Card(
+        //     margin: const EdgeInsets.only(bottom: 8),
+        //     child: ListTile(
+        //       title: Text('$name — ${a['title'] ?? ''}', style: const TextStyle(fontSize: 14)),
+        //       trailing: ElevatedButton(
+        //         onPressed: () => context.go('/dashboard/teacher/submissions'),
+        //         style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4e73df), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        //         child: const Text('Grade', style: TextStyle(fontSize: 12)),
+        //       ),
+        //     ),
+        //   );
+        // }),
+        
         const SizedBox(height: 24),
         const Text('Recent Assignments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),
@@ -399,9 +405,9 @@ class _StudentOverviewPageState extends State<StudentOverviewPage> {
         const SizedBox(height: 16),
         Row(children: [
           _StatCard(label: 'Assignments', value: '$_totalAssignments', color: const Color(0xFF4e73df), onTap: () => context.go('/dashboard/student/assignments')),
-          const SizedBox(width: 12),
-          _StatCard(label: 'Result (Marks)', value: marksLabel, color: Colors.green, onTap: () => context.go('/dashboard/student/results')),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
+          _StatCard(label: 'Result', value: marksLabel, color: Colors.green, onTap: () => context.go('/dashboard/student/results'), valueFontSize: 13),
+          const SizedBox(width: 8),
           _StatCard(label: 'Quizzes', value: '$_totalQuizzes', color: Colors.orange, onTap: () => context.go('/dashboard/student/quizzes')),
         ]),
         const SizedBox(height: 24),

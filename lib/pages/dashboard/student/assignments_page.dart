@@ -33,7 +33,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> with SingleTickerProv
         .where('student_user_id', isEqualTo: UserSession.uid).get();
 
     final studentDocs = snap.docs.map((d) => d.data()).toList();
-    if (studentDocs.isEmpty) { setState(() => _loading = false); return; }
+    if (studentDocs.isEmpty) { if (mounted) setState(() => _loading = false); return; }
 
     final results = await Future.wait(studentDocs.map((sd) async {
       final id = sd['assignment_id'] as String? ?? '';
@@ -45,6 +45,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> with SingleTickerProv
     }));
 
     final all = results.whereType<Map<String, dynamic>>().toList();
+    if (!mounted) return;
     setState(() {
       _pending = all.where((a) => a['status'] == 'assigned').toList()
         ..sort((a, b) => (a['due_date'] ?? '').compareTo(b['due_date'] ?? ''));
@@ -243,7 +244,7 @@ class _QuestionListPageState extends State<_QuestionListPage> {
                         backgroundColor: sub != null ? (sub['is_correct'] == true ? Colors.green : Colors.orange) : const Color(0xFF4e73df),
                         child: Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 13)),
                       ),
-                      title: Text(q['questionText'] ?? '', style: const TextStyle(fontSize: 14)),
+                      title: Text(q['question'] ?? '', style: const TextStyle(fontSize: 14)),
                       subtitle: Wrap(spacing: 6, children: [
                         if (q['mark'] != null) _chip('${q['mark']} pts'),
                         if (q['orderMatters'] == true) _chip('Order Matters'),
@@ -452,7 +453,7 @@ class _QuestionDetailPageState extends State<_QuestionDetailPage> {
         _badge('${q['mark'] ?? 1} pts', const Color(0xFF4e73df)),
       ]),
       const SizedBox(height: 12),
-      Text(q['questionText'] ?? '', style: const TextStyle(fontSize: 14)),
+      Text(q['question'] ?? '', style: const TextStyle(fontSize: 14)),
       const SizedBox(height: 16),
       ..._schemas.map((t) => Padding(
         padding: const EdgeInsets.only(bottom: 12),

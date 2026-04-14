@@ -44,7 +44,7 @@ class DashboardShell extends StatelessWidget {
               Icons.book,
             ),
             _NavItem('Quizzes', '/dashboard/student/quizzes', Icons.quiz),
-            _NavItem('Results', '/dashboard/student/results', Icons.bar_chart),
+            // _NavItem('Results', '/dashboard/student/results', Icons.bar_chart),
             _NavItem('Cohorts', '/dashboard/student/cohorts', Icons.group),
             _NavItem('SQL Tutor', '/dashboard/student/tutor', Icons.smart_toy),
             _NavItem('Profile', '/dashboard/profile', Icons.person),
@@ -236,7 +236,7 @@ class DashboardShell extends StatelessWidget {
                     children: loc == '/dashboard/student/overview' ? [] : [
                       _tabBtn(context, 'Assignments', Icons.book, '/dashboard/student/assignments', loc.startsWith('/dashboard/student/assignments')),
                       _tabBtn(context, 'Quizzes', Icons.quiz, '/dashboard/student/quizzes', loc.startsWith('/dashboard/student/quizzes')),
-                      _tabBtn(context, 'Results', Icons.bar_chart, '/dashboard/student/results', loc.startsWith('/dashboard/student/results')),
+                      // _tabBtn(context, 'Results', Icons.bar_chart, '/dashboard/student/results', loc.startsWith('/dashboard/student/results')),
                       // _tabBtn(context, 'Cohorts', Icons.group, '/dashboard/student/cohorts', loc.startsWith('/dashboard/student/cohorts')),
                       _tabBtn(context, 'Tutor', Icons.smart_toy, '/dashboard/student/tutor', loc.startsWith('/dashboard/student/tutor')),
                     ],

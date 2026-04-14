@@ -33,6 +33,7 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
   List<Map<String, dynamic>> _questions = [];
   List<Map<String, dynamic>> _presets = [];
   bool _loadingPresets = false;
+  Map<String, List<Map<String, dynamic>>> _schemaMap = {};
 
   // Step 2 — Assign
   List<Map<String, dynamic>> _cohorts = [];
@@ -99,12 +100,19 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
     final schemaMap = <String, List<Map<String, dynamic>>>{};
     for (final t in tables) {
       final cols = await datasetDb.rawQuery(
-        "SELECT name, type FROM pragma_table_info(?)", [t]);
-      schemaMap[t] = cols.map((c) => {'name': c['name'], 'type': c['type']}).toList();
+        "SELECT name, type, pk FROM pragma_table_info(?)", [t]);
+      final fkRows = await datasetDb.rawQuery(
+        "SELECT [from] FROM pragma_foreign_key_list(?)", [t]);
+      final fkCols = fkRows.map((r) => r['from'] as String).toSet();
+      schemaMap[t] = cols.map((c) => {
+        'name': c['name'], 'type': c['type'],
+        'pk': (c['pk'] as int? ?? 0) > 0,
+        'fk': fkCols.contains(c['name']),
+      }).toList();
     }
     await datasetDb.close();
 
-    setState(() { _tables = tables; });
+    setState(() { _tables = tables; _schemaMap = schemaMap; });
 
     // Generate presets via Groq
     if (_groqApiKey.isNotEmpty && schemaMap.isNotEmpty) {
@@ -115,7 +123,7 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
           Uri.parse('https://api.groq.com/openai/v1/chat/completions'),
           headers: {'Authorization': 'Bearer $_groqApiKey', 'Content-Type': 'application/json'},
           body: jsonEncode({'model': 'llama-3.3-70b-versatile', 'messages': [{'role': 'user',
-            'content': 'SQL instructor. Generate 10 SQL practice questions for this schema.\n\n$schemaText\n\nReturn ONLY valid JSON array. Each: {"id":1,"question":"...","answer":"SELECT ...","mark":2,"orderMatters":false,"aliasStrict":false}'}],
+            'content': 'SQL instructor. Generate 5 SQL practice questions for this schema.\n\n$schemaText\n\nReturn ONLY valid JSON array. Each: {"id":1,"question":"...","answer":"SELECT ...","mark":2,"orderMatters":false,"aliasStrict":false}'}],
             'max_tokens': 2048, 'temperature': 1.0}),
         );
         if (res.statusCode == 200) {
@@ -130,12 +138,12 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
 
   void _addQuestion() => setState(() => _questions.add({
     'question_id': DateTime.now().microsecondsSinceEpoch.toString(),
-    'questionText': '', 'answer': '', 'mark': 1,
+    'question': '', 'answer': '', 'mark': 1,
     'orderMatters': false, 'aliasStrict': false, 'max_attempts': 3,
   }));
 
   void _applyPreset(int idx, Map<String, dynamic> preset) => setState(() {
-    _questions[idx]['questionText'] = preset['question'] ?? '';
+    _questions[idx]['question'] = preset['question'] ?? '';
     _questions[idx]['answer'] = preset['answer'] ?? '';
     _questions[idx]['mark'] = preset['mark'] ?? 1;
     _questions[idx]['orderMatters'] = preset['orderMatters'] ?? false;
@@ -157,7 +165,7 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
 
   Future<void> _submit() async {
     if (_questions.isEmpty) { setState(() => _error = 'Add at least one question.'); return; }
-    if (_questions.any((q) => (q['questionText'] as String? ?? '').trim().isEmpty || (q['answer'] as String? ?? '').trim().isEmpty)) {
+    if (_questions.any((q) => (q['question'] as String? ?? '').trim().isEmpty || (q['answer'] as String? ?? '').trim().isEmpty)) {
       setState(() => _error = 'All questions must have text and an SQL answer.'); return;
     }
     if (_selectedCohort == null) { setState(() => _error = 'Please select a cohort.'); return; }
@@ -176,7 +184,9 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
       await db.close();
     }
     final totalMarks = _questions.fold<int>(0, (s, q) => s + (q['mark'] as int? ?? 0));
-    await FirebaseFirestore.instance.collection('assignments').add({
+    final ref = FirebaseFirestore.instance.collection('assignments').doc();
+    await ref.set({
+      'assignment_id': ref.id,
       'title': _titleCtrl.text.trim(),
       'description': _descCtrl.text.trim(),
       'due_date': _dueDateCtrl.text.trim(),
@@ -297,6 +307,10 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
       ),
     ]),
     if (_loadingPresets) const Padding(padding: EdgeInsets.all(8), child: Text('⏳ Loading AI presets...', style: TextStyle(color: Colors.grey))),
+    if (_schemaMap.isNotEmpty) ...[
+      const SizedBox(height: 8),
+      _schemaWidget(_schemaMap),
+    ],
     const SizedBox(height: 8),
     ..._questions.asMap().entries.map((e) => _questionCard(e.key, e.value)),
     const SizedBox(height: 20),
@@ -309,29 +323,11 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
         Text('Question ${i + 1}', style: const TextStyle(fontWeight: FontWeight.bold)),
         IconButton(icon: const Icon(Icons.close, size: 18, color: Colors.red), onPressed: () => setState(() => _questions.removeAt(i))),
       ]),
-      if (_tables.isNotEmpty) ...[
-        const Text('Filter Presets by Table:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 4),
-        Wrap(
-          spacing: 8,
-          children: _tables.map((t) {
-            final selected = (q['_filterTables'] as List<String>? ?? []).contains(t);
-            return FilterChip(
-              label: Text(t, style: const TextStyle(fontSize: 11)),
-              selected: selected,
-              onSelected: (v) => setState(() {
-                final list = List<String>.from(q['_filterTables'] as List? ?? []);
-                v ? list.add(t) : list.remove(t);
-                _questions[i]['_filterTables'] = list;
-              }),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 8),
-      ],
       if (_presets.isNotEmpty) ...[
+        
         DropdownButtonFormField<int>(
           decoration: const InputDecoration(labelText: 'Use AI Preset', border: OutlineInputBorder(), isDense: true),
+          isExpanded: true, 
           value: null,
           items: _presets.where((p) {
             final filterTables = List<String>.from(q['_filterTables'] as List? ?? []);
@@ -339,16 +335,20 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
             final answer = (p['answer'] as String? ?? '').toLowerCase();
             // match if answer SQL contains all selected table names
             return filterTables.every((t) => answer.contains(t.toLowerCase()));
-          }).toList().asMap().entries.map((e) => DropdownMenuItem(value: _presets.indexOf(e.value), child: Text(e.value['question'] as String? ?? '', overflow: TextOverflow.ellipsis))).toList(),
+          }).toList().asMap().entries.map((e) => DropdownMenuItem(
+            value: _presets.indexOf(e.value), 
+            child: Text(e.value['question'] as String? ?? '', 
+            overflow: TextOverflow.ellipsis,
+            ))).toList(),
           onChanged: (v) { if (v != null) _applyPreset(i, _presets[v]); },
         ),
         const SizedBox(height: 8),
       ],
       TextField(
-        controller: TextEditingController(text: q['questionText'])..selection = TextSelection.collapsed(offset: (q['questionText'] as String).length),
+        controller: TextEditingController(text: q['question'])..selection = TextSelection.collapsed(offset: (q['question'] as String).length),
         maxLines: 2,
         decoration: const InputDecoration(labelText: 'Question Text *', border: OutlineInputBorder()),
-        onChanged: (v) => _questions[i]['questionText'] = v,
+        onChanged: (v) => _questions[i]['question'] = v,
       ),
       const SizedBox(height: 8),
       TextField(
@@ -411,6 +411,31 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
   }
 
   Widget _stepLine() => Expanded(child: Container(height: 2, color: Colors.grey.shade300, margin: const EdgeInsets.only(bottom: 20)));
+
+  Widget _schemaWidget(Map<String, List<Map<String, dynamic>>> schema) => Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(color: const Color(0xFFF8F8F8), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade200)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('📋 Schema', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+      const SizedBox(height: 6),
+      Wrap(spacing: 16, runSpacing: 8, children: schema.entries.map((e) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(e.key, style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF4e73df), fontSize: 12)),
+          ...e.value.map((c) => Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Text('${c['name']}  ', style: const TextStyle(fontSize: 11)),
+              Text(c['type'] as String, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              if (c['pk'] == true) ...[const SizedBox(width: 4), Container(padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1), decoration: BoxDecoration(color: const Color(0xFFe67e22).withOpacity(0.15), borderRadius: BorderRadius.circular(3)), child: const Text('PK', style: TextStyle(fontSize: 9, color: Color(0xFFe67e22), fontWeight: FontWeight.bold)))],
+              if (c['fk'] == true) ...[const SizedBox(width: 4), Container(padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1), decoration: BoxDecoration(color: const Color(0xFF8e44ad).withOpacity(0.15), borderRadius: BorderRadius.circular(3)), child: const Text('FK', style: TextStyle(fontSize: 9, color: Color(0xFF8e44ad), fontWeight: FontWeight.bold)))],
+            ]),
+          )),
+        ],
+      )).toList()),
+    ]),
+  );
 
   Widget _warningCard(String title, String subtitle, VoidCallback onTap) => Center(child: Padding(
     padding: const EdgeInsets.all(24),

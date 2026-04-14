@@ -56,6 +56,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Image.asset('assets/logo.png', height: 72),
+                const SizedBox(height: 12),
                 const Text('Welcome Back', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                 const SizedBox(height: 8),
                 const Text('Log in to your account', style: TextStyle(color: Colors.black54), textAlign: TextAlign.center),

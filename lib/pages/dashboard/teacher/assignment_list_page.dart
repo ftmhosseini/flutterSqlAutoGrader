@@ -202,7 +202,7 @@ class _AssignmentListPageState extends State<AssignmentListPage> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(12),
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                    Text('Q${qi + 1}: ${q['questionText'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                                    Text('Q${qi + 1}: ${q['question'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                                     const SizedBox(height: 6),
                                     Container(
                                       padding: const EdgeInsets.all(8),
