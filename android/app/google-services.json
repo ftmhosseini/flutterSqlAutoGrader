@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "462365261662",
+    "project_id": "sql-auto-grader",
+    "storage_bucket": "sql-auto-grader.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462365261662:android:202abfd929bd48ec2b99cf",
+        "android_client_info": {
+          "package_name": "com.example.sql_auto_grader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxquyxXuTHPv2Zv8GbIAvhBYoiVOz4oEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
