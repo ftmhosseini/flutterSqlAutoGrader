@@ -1,4 +1,4 @@
-package com.example.sql_auto_grader
+package ca.arzook.sql_auto_grader
 
 import io.flutter.embedding.android.FlutterActivity
 

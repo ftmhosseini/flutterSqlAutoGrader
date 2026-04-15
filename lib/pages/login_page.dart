@@ -75,7 +75,16 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(hintText: 'name@example.com', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 16),
-                const Text('Password'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Password'),
+                    GestureDetector(
+                      onTap: () => context.go('/forgot-password'),
+                      child: const Text('Forgot?', style: TextStyle(color: Color(0xFF4e73df), fontSize: 12)),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: _passCtrl,

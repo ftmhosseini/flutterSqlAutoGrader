@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
 import '../pages/register_page.dart';
+import '../pages/forgot_password_page.dart';
 import '../pages/dashboard/dashboard_shell.dart';
 import '../pages/dashboard/dashboard_home.dart';
 import '../pages/dashboard/profile_page.dart';
@@ -29,7 +30,7 @@ GoRouter buildRouter(BuildContext context) {
       if (auth.loading) return null;
       final loggedIn = auth.role != null;
       final loc = state.matchedLocation;
-      final onAuth = loc == '/login' || loc == '/register';
+      final onAuth = loc == '/login' || loc == '/register' || loc == '/forgot-password';
       if (!loggedIn && loc.startsWith('/dashboard')) return '/login';
       if (loggedIn && (onAuth || loc == '/')) return '/dashboard';
       return null;
@@ -38,6 +39,7 @@ GoRouter buildRouter(BuildContext context) {
       GoRoute(path: '/', builder: (_, _) => const HomePage()),
       GoRoute(path: '/login', builder: (_, _) => const LoginPage()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterPage()),
+      GoRoute(path: '/forgot-password', builder: (_, _) => const ForgotPasswordPage()),
       ShellRoute(
         builder: (_, _, child) => DashboardShell(child: child),
         routes: [
