@@ -92,8 +92,9 @@ class _QuizzesPageState extends State<QuizzesPage> {
               final isOverdue = status == 'Due';
               final mark = q['achievedMark'];
               final totalMark = q['mark'];
-              final pct = (mark != null && totalMark != null && totalMark > 0)
-                  ? '${((mark / totalMark) * 100).round()}%' : null;
+              final totalMarkNum = totalMark != null ? num.tryParse(totalMark.toString()) : null;
+              final pct = (mark != null && totalMarkNum != null && totalMarkNum > 0)
+                  ? '${((mark / totalMarkNum) * 100).round()}%' : null;
 
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),

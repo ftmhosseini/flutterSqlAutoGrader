@@ -142,29 +142,29 @@ class _NavBar extends StatelessWidget implements PreferredSizeWidget {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       actions: [
-        TextButton(onPressed: () => context.go('/'), child: const Text('Home', style: TextStyle(color: Colors.white))),
-        TextButton(onPressed: () => context.go('/about'), child: const Text('About', style: TextStyle(color: Colors.white))),
-        if (loggedIn) ...[
-          TextButton(onPressed: () => context.go('/dashboard'), child: const Text('Dashboard', style: TextStyle(color: Colors.white))),
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: CircleAvatar(
-              backgroundColor: const Color(0xFF4e73df),
-              radius: 16,
-              child: Text(
-                (UserSession.role?[0] ?? 'U').toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-            ),
-          ),
-        ] else
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: TextButton(
-              onPressed: () => context.go('/login'),
-              child: const Text('Login', style: TextStyle(color: Colors.white)),
-            ),
-          ),
+        // TextButton(onPressed: () => context.go('/'), child: const Text('Home', style: TextStyle(color: Colors.white))),
+        // TextButton(onPressed: () => context.go('/about'), child: const Text('About', style: TextStyle(color: Colors.white))),
+        // if (loggedIn) ...[
+        //   TextButton(onPressed: () => context.go('/dashboard'), child: const Text('Dashboard', style: TextStyle(color: Colors.white))),
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 12),
+        //     child: CircleAvatar(
+        //       backgroundColor: const Color(0xFF4e73df),
+        //       radius: 16,
+        //       child: Text(
+        //         (UserSession.role?[0] ?? 'U').toUpperCase(),
+        //         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+        //       ),
+        //     ),
+        //   ),
+        // ] else
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 8),
+        //     child: TextButton(
+        //       onPressed: () => context.go('/login'),
+        //       child: const Text('Login', style: TextStyle(color: Colors.white)),
+        //     ),
+        //   ),
       ],
     );
   }

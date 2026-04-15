@@ -25,8 +25,18 @@ class _ResultsPageState extends State<ResultsPage> {
         .where('student_user_id', isEqualTo: UserSession.uid)
         .where('status', whereIn: ['submitted', 'completed'])
         .get();
+
+    final results = await Future.wait(snap.docs.map((d) async {
+      final sd = d.data();
+      final assignDoc = await FirebaseFirestore.instance
+          .collection('assignments')
+          .doc(sd['assignment_id'] as String? ?? '')
+          .get();
+      return {...sd, if (assignDoc.exists) ...assignDoc.data()!, 'id': d.id};
+    }));
+
     setState(() {
-      _results = snap.docs.map((d) => {...d.data(), 'id': d.id}).toList();
+      _results = results.toList();
       _loading = false;
     });
   }
@@ -50,8 +60,8 @@ class _ResultsPageState extends State<ResultsPage> {
                     separatorBuilder: (_, _) => const Divider(height: 1),
                     itemBuilder: (_, i) {
                       final r = _results[i];
-                      final earned = r['earned_point'] ?? 0;
-                      final total = r['total_marks'] ?? 0;
+                      final earned = num.tryParse(r['earned_point']?.toString() ?? '') ?? 0;
+                      final total = num.tryParse(r['total_marks']?.toString() ?? '') ?? 0;
                       final pct = total > 0 ? ((earned / total) * 100).round() : 0;
                       return ListTile(
                         title: Text(r['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
