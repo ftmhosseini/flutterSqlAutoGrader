@@ -118,24 +118,23 @@ class _TeacherDashboardState extends State<_TeacherDashboard> {
         const SizedBox(height: 24),
         Text('Needs Grading (${_needsGrading.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),
-        // if (_needsGrading.isEmpty)
-        //   const Text('No assignments waiting for grading.', style: TextStyle(color: Colors.grey))
-        // else ..._needsGrading.map((sa) {
-        //   final name = _userNames[sa['student_user_id']] ?? 'Unknown';
-        //   final a = _assignments.firstWhere((a) => a['assignment_id'] == sa['assignment_id'], orElse: () => {});
-        //   return Card(
-        //     margin: const EdgeInsets.only(bottom: 8),
-        //     child: ListTile(
-        //       title: Text('$name — ${a['title'] ?? ''}', style: const TextStyle(fontSize: 14)),
-        //       trailing: ElevatedButton(
-        //         onPressed: () => context.go('/dashboard/teacher/submissions'),
-        //         style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4e73df), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        //         child: const Text('Grade', style: TextStyle(fontSize: 12)),
-        //       ),
-        //     ),
-        //   );
-        // }),
-        
+        if (_needsGrading.isEmpty)
+          const Text('No assignments waiting for grading.', style: TextStyle(color: Colors.grey))
+        else ..._needsGrading.map((sa) {
+          final name = _userNames[sa['student_user_id']] ?? 'Unknown';
+          final a = _assignments.firstWhere((a) => a['assignment_id'] == sa['assignment_id'], orElse: () => {});
+          return Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              title: Text('$name — ${a['title'] ?? ''}', style: const TextStyle(fontSize: 14)),
+              trailing: ElevatedButton(
+                onPressed: () => context.go('/dashboard/teacher/submissions'),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4e73df), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                child: const Text('Grade', style: TextStyle(fontSize: 12)),
+              ),
+            ),
+          );
+        }),
         const SizedBox(height: 24),
         const Text('Recent Assignments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),

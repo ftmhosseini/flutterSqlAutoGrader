@@ -221,15 +221,29 @@ class _StudentRow extends StatelessWidget {
   }
 
   Future<void> _viewAttempts(BuildContext context) async {
+    final questions = List<Map<String, dynamic>>.from(assignment['questions'] ?? []);
+    final questionIds = questions.map((q) => q['question_id'] as String).toSet();
+
     final snap = await FirebaseFirestore.instance
         .collection('question_attempts')
-        .where('assignment_id', isEqualTo: assignment['assignment_id'])
         .where('student_user_id', isEqualTo: studentAssignment['student_user_id'])
         .get();
 
-    final attempts = {for (final d in snap.docs) d.data()['question_id'] as String: d.data()};
-    final questions = List<Map<String, dynamic>>.from(assignment['questions'] ?? []);
-
+    // Keep only attempts for this assignment's questions, pick best per question
+    final attempts = <String, Map<String, dynamic>>{};
+    for (final d in snap.docs) {
+      final data = d.data();
+      final qid = data['question_id'] as String? ?? '';
+      if (!questionIds.contains(qid)) continue;
+      final existing = attempts[qid];
+      if (existing == null ||
+          (data['is_correct'] == true && existing['is_correct'] != true) ||
+          (data['is_correct'] == existing['is_correct'] &&
+              (data['submitted_on']?.toString() ?? '').compareTo(existing['submitted_on']?.toString() ?? '') > 0)) {
+        attempts[qid] = data;
+      }
+    }
+    
     if (!context.mounted) return;
     showModalBottomSheet(
       context: context,
@@ -299,24 +313,84 @@ class _StudentRow extends StatelessWidget {
     final total = assignment['total_marks'];
     final ctrl = TextEditingController(text: earned?.toString() ?? '');
 
+    // Fetch attempts to show what the student got per question
+    final snap = await FirebaseFirestore.instance
+        .collection('question_attempts')
+        .where('student_user_id', isEqualTo: studentAssignment['student_user_id'])
+        .get();
+    final questions = List<Map<String, dynamic>>.from(assignment['questions'] ?? []);
+    final questionIds = questions.map((q) => q['question_id'] as String).toSet();
+    final attempts = <String, Map<String, dynamic>>{};
+    for (final d in snap.docs) {
+      final data = d.data();
+      final qid = data['question_id'] as String? ?? '';
+      if (!questionIds.contains(qid)) continue;
+      final existing = attempts[qid];
+      if (existing == null ||
+          (data['is_correct'] == true && existing['is_correct'] != true) ||
+          (data['is_correct'] == existing['is_correct'] &&
+              (data['submitted_on']?.toString() ?? '').compareTo(existing['submitted_on']?.toString() ?? '') > 0)) {
+        attempts[qid] = data;
+      }
+    }
+
+    if (!context.mounted) return;
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Edit Score — $studentName'),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Assignment: ${assignment['title'] ?? ''}', style: const TextStyle(fontSize: 13, color: Colors.grey)),
-          const SizedBox(height: 12),
-          TextField(
-            controller: ctrl,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'Score',
-              suffixText: '/ ${total ?? '?'}',
-              border: const OutlineInputBorder(),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('Assignment: ${assignment['title'] ?? ''}', style: const TextStyle(fontSize: 13, color: Colors.grey)),
+            const SizedBox(height: 10),
+            if (questions.isNotEmpty) ...[
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: questions.length,
+                  itemBuilder: (_, i) {
+                    final q = questions[i];
+                    final qid = q['question_id'] as String? ?? '$i';
+                    final attempt = attempts[qid];
+                    final correct = attempt?['is_correct'] == true;
+                    final mark = (q['mark'] ?? 0) as num;
+                    final questionText = q['question'] as String? ?? '';
+                    final preview = questionText.length > 40 ? '${questionText.substring(0, 40)}…' : questionText;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 3),
+                      child: Row(children: [
+                        Icon(
+                          attempt == null ? Icons.remove_circle_outline : correct ? Icons.check_circle : Icons.cancel,
+                          size: 16,
+                          color: attempt == null ? Colors.grey : correct ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text('Q${i + 1}: $preview', style: const TextStyle(fontSize: 12))),
+                        Text(
+                          attempt == null ? '— / $mark' : '${correct ? mark : 0} / $mark',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: attempt == null ? Colors.grey : correct ? Colors.green : Colors.red),
+                        ),
+                      ]),
+                    );
+                  },
+                ),
+              ),
+              const Divider(),
+            ],
+            TextField(
+              controller: ctrl,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Override Score',
+                suffixText: '/ ${total ?? '?'}',
+                border: const OutlineInputBorder(),
+              ),
+              autofocus: true,
             ),
-            autofocus: true,
-          ),
-        ]),
+          ]),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
