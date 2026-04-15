@@ -46,3 +46,38 @@ app.*.map.json
 
 .env
 
+# Build outputs & generated files:
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+
+# IDE/editor files:
+.idea/
+.vscode/
+*.iml
+
+
+# Platform-specific generated files:
+android/.gradle/
+android/local.properties
+android/key.properties          # signing keys — never commit
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+macos/Pods/
+
+
+# Secrets & environment:
+.env
+google-services.json            # Firebase Android config
+GoogleService-Info.plist        # Firebase iOS config
+
+
+# Other:
+*.log
+pubspec.lock                    # optional: omit for apps, keep for packages
+
+
