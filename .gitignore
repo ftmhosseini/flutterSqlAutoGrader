@@ -72,6 +72,7 @@ macos/Pods/
 
 # Secrets & environment:
 .env
+android/app/google-services.json
 google-services.json            # Firebase Android config
 GoogleService-Info.plist        # Firebase iOS config
 
@@ -79,5 +80,14 @@ GoogleService-Info.plist        # Firebase iOS config
 # Other:
 *.log
 pubspec.lock                    # optional: omit for apps, keep for packages
+
+# Platform folders
+.vscode/
+android/
+ios/
+linux/
+macos/
+web/
+windows/
 
 
