@@ -83,33 +83,22 @@ class _StudentCohortPageState extends State<StudentCohortPage> {
             Text(_error, style: const TextStyle(color: Colors.red, fontSize: 13)),
           ],
           const SizedBox(height: 16),
-          // Empty state with SIM77 suggestion
+          // Empty state with Q7ZOB suggestion
           if (_cohorts.isEmpty)
-            Card(
-              color: Colors.blue.shade50,
+            Center(
               child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("You haven't joined any cohorts yet.",
-                        style: TextStyle(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 8),
-                    const Text('Use code '),
-                    GestureDetector(
-                      onTap: () {
-                        _codeCtrl.text = 'SIM77';
-                        _join('SIM77');
-                      },
-                      child: const Text('SIM77',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline)),
-                    ),
-                    const Text(' to join the Test Cohort.'),
-                  ],
-                ),
+                padding: const EdgeInsets.only(top: 24),
+                child: Column(children: [
+                  const Text("You haven't joined any cohorts yet.", style: TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 8),
+                  const Text('Use code Q7ZOB to join the SQL test', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    onPressed: () => setState(() => _codeCtrl.text = 'Q7ZOB'),
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
+                    child: const Text('Join Test Cohort'),
+                  ),
+                ]),
               ),
             )
           else

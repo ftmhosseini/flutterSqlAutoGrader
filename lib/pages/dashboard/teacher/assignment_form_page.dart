@@ -192,10 +192,11 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
       'due_date': _dueDateCtrl.text.trim(),
       'dataset': _selectedDataset,
       'student_class': _selectedCohort,
-      'questions': _questions,
+      'questions': _questions.map((q) => Map<String, dynamic>.from(q)..remove('_filterTables')).toList(),
       'total_marks': totalMarks,
-      'reminder_interval':_sendReminders,
-      'enable_submission_notification':_notifyOnSubmit,
+      'grading_policy': 'best',
+      'reminder_interval': _sendReminders,
+      'enable_submission_notification': _notifyOnSubmit,
       'owner_user_id': UserSession.uid,
       'created_on': FieldValue.serverTimestamp(),
     });
@@ -324,7 +325,24 @@ class _AssignmentFormPageState extends State<AssignmentFormPage> {
         IconButton(icon: const Icon(Icons.close, size: 18, color: Colors.red), onPressed: () => setState(() => _questions.removeAt(i))),
       ]),
       if (_presets.isNotEmpty) ...[
-        
+        // Table filter chips
+        if (_tables.isNotEmpty) ...[
+          const Text('Filter presets by table:', style: TextStyle(fontSize: 11, color: Colors.grey)),
+          const SizedBox(height: 4),
+          Wrap(spacing: 6, children: _tables.map((t) {
+            final selected = (q['_filterTables'] as List? ?? []).contains(t);
+            return FilterChip(
+              label: Text(t, style: const TextStyle(fontSize: 11)),
+              selected: selected,
+              onSelected: (v) => setState(() {
+                final current = List<String>.from(q['_filterTables'] as List? ?? []);
+                v ? current.add(t) : current.remove(t);
+                _questions[i]['_filterTables'] = current;
+              }),
+            );
+          }).toList()),
+          const SizedBox(height: 8),
+        ],
         DropdownButtonFormField<int>(
           decoration: const InputDecoration(labelText: 'Use AI Preset', border: OutlineInputBorder(), isDense: true),
           isExpanded: true, 

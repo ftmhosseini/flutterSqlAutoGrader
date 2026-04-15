@@ -181,14 +181,27 @@ class _QuestionListPageState extends State<_QuestionListPage> {
   }
 
   Future<void> _loadSubmissions() async {
+    final questions = List<Map<String, dynamic>>.from(widget.assignment['questions'] ?? []);
+    final qids = questions.map((q) => q['question_id'] as String).toList();
+    if (qids.isEmpty) return;
+
     final snap = await FirebaseFirestore.instance
         .collection('question_attempts')
-        .where('assignment_id', isEqualTo: widget.assignment['assignment_id'])
+        .where('question_id', whereIn: qids)
         .where('student_user_id', isEqualTo: UserSession.uid)
         .get();
-    setState(() {
-      _submissions = {for (final d in snap.docs) d.data()['question_id'] as String: d.data()};
-    });
+
+    // For each question, keep the most recent attempt
+    final map = <String, Map<String, dynamic>>{};
+    for (final d in snap.docs) {
+      final data = d.data();
+      final qid = data['question_id'] as String;
+      if (!map.containsKey(qid) ||
+          (data['submitted_on'] ?? '').compareTo(map[qid]!['submitted_on'] ?? '') > 0) {
+        map[qid] = data;
+      }
+    }
+    setState(() => _submissions = map);
   }
 
   Future<void> _markFinished(BuildContext context) async {
@@ -258,7 +271,7 @@ class _QuestionListPageState extends State<_QuestionListPage> {
                           ? () => setState(() => _expandedId = isExpanded ? null : qid)
                           : () => Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => _QuestionDetailPage(question: q, assignment: widget.assignment))),
                     ),
-                    if (isExpanded && sub != null) ...[
+                    if (isExpanded) ...[
                       const Divider(height: 1),
                       Padding(
                         padding: const EdgeInsets.all(12),
@@ -269,7 +282,10 @@ class _QuestionListPageState extends State<_QuestionListPage> {
                             width: double.infinity,
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(6)),
-                            child: Text(sub['submitted_sql'] ?? '', style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                            child: Text(
+                              sub == null ? '(no submission)' : (sub['submitted_sql'] as String? ?? '').isEmpty ? '(empty answer)' : sub['submitted_sql'] as String,
+                              style: TextStyle(fontFamily: 'monospace', fontSize: 12, color: (sub == null || (sub['submitted_sql'] as String? ?? '').isEmpty) ? Colors.grey : Colors.black),
+                            ),
                           ),
                         ]),
                       ),

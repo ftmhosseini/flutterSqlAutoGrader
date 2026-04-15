@@ -339,30 +339,35 @@ class _QuizFormPageState extends State<_QuizFormPage> {
                 )).toList()),
                 const SizedBox(height: 10),
               ],
-                DropdownButtonFormField<int>(
-                  decoration: const InputDecoration(labelText: 'Use Preset', border: OutlineInputBorder(), isDense: true),
-                  isExpanded: true,
-                  value: _selectedPreset,
-                  items: _presets.asMap().entries.where((e) {
+                Builder(builder: (ctx) {
+                  final filteredEntries = _presets.asMap().entries.where((e) {
                     if (_selectedTables.isEmpty) return true;
                     final ans = (e.value['answer'] as String? ?? '').toLowerCase();
                     return _selectedTables.every((t) => ans.contains(t.toLowerCase()));
-                  }).map((e) => DropdownMenuItem(value: e.key, child: Text(e.value['question'] as String? ?? '', overflow: TextOverflow.ellipsis))).toList(),
-                  onChanged: (v) {
-                    if (v == null) return;
-                    final p = _presets[v];
-                    setState(() {
-                      _selectedPreset = v;
-                      _questionCtrl.text = p['question'] ?? '';
-                      _answerCtrl.text = p['answer'] ?? '';
-                      _difficulty = p['difficulty'] ?? 'easy';
-                      _maxAttempts = p['max_attempts'] ?? 1;
-                      _mark = p['mark'] ?? 1;
-                      _orderMatters = p['orderMatters'] ?? false;
-                      _aliasStrict = p['aliasStrict'] ?? false;
-                    });
-                  },
-                ),
+                  }).toList();
+                  // If current selection is not in filtered list, reset to null
+                  final validValue = filteredEntries.any((e) => e.key == _selectedPreset) ? _selectedPreset : null;
+                  return DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(labelText: 'Use Preset', border: OutlineInputBorder(), isDense: true),
+                    isExpanded: true,
+                    value: validValue,
+                    items: filteredEntries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value['question'] as String? ?? '', overflow: TextOverflow.ellipsis))).toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      final p = _presets[v];
+                      setState(() {
+                        _selectedPreset = v;
+                        _questionCtrl.text = p['question'] ?? '';
+                        _answerCtrl.text = p['answer'] ?? '';
+                        _difficulty = p['difficulty'] ?? 'easy';
+                        _maxAttempts = (p['max_attempts'] as num?)?.toInt() ?? 1;
+                        _mark = (p['mark'] as num?)?.toInt() ?? 1;
+                        _orderMatters = p['orderMatters'] ?? false;
+                        _aliasStrict = p['aliasStrict'] ?? false;
+                      });
+                    },
+                  );
+                }),
                 const SizedBox(height: 10),
               ],
               TextField(controller: _questionCtrl, maxLines: 3, decoration: const InputDecoration(labelText: 'Question Prompt', border: OutlineInputBorder())),
