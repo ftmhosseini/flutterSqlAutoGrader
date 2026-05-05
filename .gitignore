@@ -1,0 +1,26 @@
+# Build and binary outputs
+.dart_tool/
+.idea/
+.vscode/
+build/
+bin/
+
+# Testing directory
+test/
+
+# Platform-specific project folders (WARNING: This breaks the repo for others)
+android/
+ios/
+windows/
+macos/
+linux/
+web/
+
+# Other sensitive files
+.metadata
+.env
+key.properties
+*.lock
+*.json
+*.properties
+*.jks
