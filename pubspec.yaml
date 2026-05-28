@@ -33,6 +33,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.3
   mockito: ^5.4.4
   build_runner: ^2.4.13
+  fake_cloud_firestore: ^3.1.0
+  firebase_auth_mocks: ^0.14.1
+  google_sign_in_mocks: ^0.3.0
 
 flutter_launcher_icons:
   android: true
