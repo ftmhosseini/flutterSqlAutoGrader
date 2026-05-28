@@ -6,7 +6,7 @@ build/
 bin/
 
 # Testing directory
-test/
+
 
 # Platform-specific project folders (WARNING: This breaks the repo for others)
 android/
